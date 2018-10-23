@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Page Title</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            div:empty::before {
+                color: grey;
+            }
+            div[placeholder]:not([placeholder=""]):empty::before {
+                content: attr(placeholder);
+            }
+            div{
+                width: 90%;
+                min-height: 10vw;
+                border: 1vw dashed gray;
+                vertical-align: middle;
+                text-align: center;
+                margin:0 auto;
+            }
+            textarea{
+                width: 100%;
+                min-height: 9vw;
+            }
+            body{
+                text-align: center;
+            }
+        </style>
+        <script type="text/javascript">
+            function check() {
+                var bHaveFileAPI = (window.File && window.FileReader)
+                if (!bHaveFileAPI) {
+                    alert("no file api");
+                    return;
+                }
+            }
+
+            function allowDrop(ev) {
+                ev.preventDefault();
+                var doc = document.querySelector("#filecontents")
+                while(doc.firstChild){
+                    doc.removeChild(doc.firstChild);
+                }
+            }
+
+            function drop(ev) {
+                ev.preventDefault();
+                var file = ev.dataTransfer.files[0];
+
+                if (file.type.match("image.*")){
+                    var reader = new FileReader();
+                    reader.onload = function (evt) {
+                        var result = evt.target.result;
+                        var img = new Image();
+                        img.src = result;
+                        ev.target.appendChild(img);
+                    }
+
+                    reader.readAsDataURL(file);
+                } else if (file.type.match("text.*")){
+                    var reader = new FileReader();
+                    reader.onload = function (evt) {
+                        var result = evt.target.result;
+                        var textarea = document.createElement("TextArea");
+                        textarea.innerHTML = result;
+                        ev.target.appendChild(textarea);
+                    }
+
+                    reader.readAsText(file);
+                } else{
+                    alert("not supported file");
+                }
+            }
+
+            window.addEventListener("load", check);
+        </script>
+    </head>
+
+    <body>
+        <h1>Drop File and show content</h1>
+        <div id="filecontents" placeholder='Drop a file here' ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    </body>
+
+</html>
